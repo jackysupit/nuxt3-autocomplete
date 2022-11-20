@@ -1,0 +1,67 @@
+{
+  "name": "nuxt3-autocomplete",
+  "version": "0.1.01",
+  "description": "autocomplete for nuxt3. https://github.com/jackysupit/nuxt3-autocomplete",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jackysupit/nuxt3-autocomplete.git"
+  },
+  "keywords": [
+    "vue",
+    "vue3",
+    "nuxt3",
+    "autocomplete"
+  ],
+  "author": "jacky supit",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jackysupit/nuxt3-autocomplete/issues"
+  },
+  "main": "src/Autocomplete.vue",
+  "browser": {
+    "./sfc": "src/Autocomplete.vue"
+  },
+  "files": [
+    "dist/*",
+    "src/**/*.vue"
+  ],
+  "scripts": {
+    "build:publish": "nuxt3-cli-service build --target lib --name Autocomplete src/Autocomplete.vue",
+    "serve": "nuxt3-cli-service serve",
+    "build": "nuxt3-cli-service build",
+    "lint": "nuxt3-cli-service lint"
+  },
+  "homepage": "https://github.com/jackysupit/nuxt3-autocomplete#readme",
+  "dependencies": {
+    "autocompleter": "^7.0.1"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-plugin-eslint": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
+    "@vue/compiler-sfc": "^3.0.0",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^6.7.2",
+    "eslint-plugin-vue": "^7.0.0-0",
+    "vue": "^3.0.0"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/vue3-essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "babel-eslint"
+    },
+    "rules": {}
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}
