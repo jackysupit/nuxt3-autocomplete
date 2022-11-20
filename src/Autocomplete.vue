@@ -132,8 +132,17 @@ export default {
               if(typeof self.onFetch === 'function') {
                   self.onFetch(text, update);
               } else {
-                  text = text.toLowerCase();
-                  var suggestions = self.$props.lov.filter(n => n.label.toLowerCase().indexOf(text) >= 0);
+                  let lowerText = text.toLowerCase();
+                  var suggestions = self.$props.lov.filter(n => n.label.toLowerCase().indexOf(lowerText) >= 0);
+
+                  if(suggestions.length == 0) {
+                      let item = {
+                          label: text,
+                          value: "",
+                      }
+                      self.$emit('update:modelValue', item);
+                  }
+
                   update(suggestions);
               }
               self.$emit('onFetch');
