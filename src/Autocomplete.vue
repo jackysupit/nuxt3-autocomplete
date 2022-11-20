@@ -46,7 +46,8 @@ div.autocomplete[role="listbox"] > div.selected[role="option"]{
 </style>
 <script>
 import { ref } from 'vue'
-import autocomplete from 'autocompleter';
+// import autocomplete from 'autocompleter';
+import 'https://cdn.jsdelivr.net/npm/autocompleter@7.0.1/autocomplete.js';
 
 export default {
   name: "Autocomplete",
