@@ -19,27 +19,42 @@ export default defineNuxtPlugin((nuxtApp) => {
 });
 ```
 
-2. now it's available on your template
+2. now it's available on your template. here is a working example
 ``` javascript
 // use it
 <template>
-  <div>
-    <Autocomplete  />
-    <h4>Value: {{ myValue }}</h4>
-  </div>
+    <div class="row">
+        <div class="col-md-3 bg-danger">
+        </div>
+        <div class="col-md-3 bg-warning">
+            <Autocomplete :lov="countries" class="form-control" v-model="selected"/>
+        </div>
+        <div class="col-md-3 bg-info">
+            selected: {{selected}}
+        </div>
+        <div class="col-md-3 bg-success">
+            {{countries}}
+
+            <button class="btn btn-primary" @click="tambah">Tambah</button>
+        </div>
+        </div>
 </template>
 <script setup lang="ts">
-  const myChangeEvent = (event) => {
-    console.log("myChangeEvent: ", event);
-  }
-  const mySelectEvent = (e) => {
-    console.log("mySelectEvent: ", event);
-  }
-  const myOptions = [
-    {id: 1, text: 'apple'},
-    {id: 2, text: 'berry'},
-    {id: 3, text: 'cherry'},
-  ]
-  const myValue = ref();
+    const defaultCountries = [
+        { label: 'United Kingdom', value: 'UK' },
+        { label: 'United States', value: 'US' }
+    ];
+    const countries = ref(defaultCountries);
+
+    const tambah = () =>{
+        countries.value = [
+        { label: 'United Kingdom', value: 'UK' },
+        { label: 'United States', value: 'US' },
+        { label: 'Indonesia', value: 'ID' },
+    ]
+        console.log("countries: ", countries);
+    }
+
+    const selected = ref();
 </script>
 ```
