@@ -1,17 +1,30 @@
 <template>
   <input ref="elAutoComplete"
-    :class="elclass ? elclass : ''"
+    onfocus="this.setSelectionRange(0, this.value.length)"
+    :class="elClass ? elClass : ''"
     :name="name"
     :placeholder="placeholder"
     :minLength="minLength ? minLength : 1"
     :disabled=disabled
     :required=required
 />
+<!-- <div style="min-height:100px; width:100%; boarder:1px solid orange; background: yellow; color: blue;">
+color = {{ color }} <br/>
+bgcolor = {{ bgcolor }} <br/>
+borderColor = {{ borderColor }} <br/>
+selectedColor = {{ selectedColor }} <br/>
+selectedBgColor = {{ selectedBgColor }} <br/>
+elClass = {{ elClass }} <br/>
+</div> -->
 </template>
 <style>
 div.autocomplete[role="listbox"] {
+/*
     color: v-bind(color);
     background-color: v-bind(bgcolor);
+*/
+    color: black;
+    background-color: white;
 
     padding: 5px 12px;
     display: flex;
@@ -19,47 +32,42 @@ div.autocomplete[role="listbox"] {
     width: 100%;
     pointer-events: auto;
     background-clip: padding-box;
-    border: 1px solid v-bind(bgcolor);
+    border: 1px solid rgba(0,0,0,0.3);
     border-bottom-left-radius: 0.3rem;
     border-bottom-right-radius: 0.3rem;
 outline: 0;
 }
 div.autocomplete[role="listbox"] > div.selected[role="option"]{
-    color: v-bind(selectedColor);
-    background: v-bind(selectedBgColor);
+    /* color: v-bind(selectedColor);
+    background: v-bind(selectedBgColor); */
+    color: #5c5c5c;
+    background: #f0f0f0;
 }
 </style>
 <script>
 import { ref } from 'vue'
 import autocomplete from 'autocompleter';
 
-let elAutocomplete =  ref();
-const emit = defineEmits([
+export default {
+  name: "Autocomplete",
+  data() {
+    return {
+      el: null,
+    };
+  },
+  emits: [
   'onFetch',
   'onMounted',
   'onSelect:modelValue',
-])
-
-const onStart = () => {
-  emit('onStart');
-}
-const onFetch = (text, update) => {
-  emit('onFetch', text, update);
-}
-const onSelect = (item) => {
-  emit('onSelect', item);
-}
-
-const color = ref("black");
-const bgcolor = ref("white");
-const selectedColor = ref("black");
-const selectedBgColor = ref("lightgrey");
-const borderColor = ref("#fefefe");
-
-
-export default {
+  'update:modelValue',
+  ],
   props: {
+    modelValue: {
+      type: Object,
+      default: () => {}
+    }, // previously was `value: String`
     "class": String,
+    "showOnFocus": Boolean,
     "name": String,
     "placeholder": String,
     "color": String,
@@ -67,48 +75,101 @@ export default {
     "selectedColor": String,
     "selectedBgColor": String,
     "borderColor": String,
-    "minLength": number,
+    "minLength": Number,
     "disabled": Boolean,
     "required": Boolean,
+    "lov": {
+      type: Array,
+      default: () => []
+    },
+  },
+  watch: {
+    lov: {
+      handler(val) {
+        debugger;
+        this.setLov(val);
+      },
+      deep: true
+    },
+    modelValue: {
+      handler(val) {
+        this.setValue(val);
+      },
+      deep: true
+    },
+  },
+  methods: {
+    setLov(vals = []) {
+      //GENERATE ulang EL
+      // this.select2.select2({
+      //   placeholder: this.placeholder,
+      //   ...this.settings,
+      //   data: vals
+      // });
+
+      //set value
+      console.log("new LOG: ", vals);
+      console.log("new LOV: ", this.lov);
+      this.setValue(this.modelValue);
+    },
+    setValue(val) {
+      if (val instanceof Object) {
+        this.el.value = val.label;
+      } else {
+        this.el.value = val;
+      }
+    },
+    generateEl() {
+      const self = this;
+      const el = self.el;
+
+      autocomplete({
+          input: el,
+          minLength: 1,
+          showOnFocus: self.showOnFocus,
+          fetch: function(text, update) {
+              if(typeof self.onFetch === 'function') {
+                  self.onFetch(text, update);
+              } else {
+                  text = text.toLowerCase();
+                  var suggestions = self.$props.lov.filter(n => n.label.toLowerCase().indexOf(text) >= 0);
+                  update(suggestions);
+              }
+              self.$emit('onFetch');
+          },
+          onSelect: function(item) {
+              el.value = item.label;
+
+              if(self.onSelect === 'function') {
+                  self.onSelect(item);
+              }
+              self.$emit('onSelect:modelValue', item);
+              self.$emit('update:modelValue', item);
+          }
+      });
+    },
   },
   setup(props) {
-    // const name =  ref("");
-    // const placeholder =  ref("");
-    // const bgcolor =  ref("white");
-    // const selectedBgColor =  ref("lightgrey");
-    // const minLength =  ref(1);
-    // const disabled =  ref(false);
-    // const required =  ref(false);
-
     return {
-      onFetch: null,
-      onSelect: null,
+      "elClass": props["class"],
+      "showOnFocus": props["showOnFocus"],
+      "name": props["name"],
+      "placeholder": props["placeholder"],
+      "color": props["color"] ? props["color"] : "black",
+      "bgcolor": props["bgcolor"] ? props["bgcolor"] : "white",
+      "selectedColor": props["selectedColor"] ? props["selectedColor"] : "black",
+      "selectedBgColor": props["selectedBgColor"] ? props["selectedBgColor"] : "lightgrey",
+      "borderColor": props["borderColor"] ? props["borderColor"] : "#f0f0f0",
+      "minLength": props["minLength"] && parseInt(props["minLength"]) > 0 ? parseInt(props["minLength"]) : 1,
+      "disabled": props["disabled"],
+      "required": props["required"],
+      "lov": props["lov"] ? props["lov"] : [],
     }
   },
-
   mounted() {
-    emit('onMounted');
-    autocomplete({
-        input: elAutoComplete.value,
-        minLength: 1,
-        fetch: function(text, update) {
-            if(typeof this.onFetch === 'function') {
-                this.onFetch(text, update);
-            } else {
-                text = text.toLowerCase();
-                var suggestions = countries.filter(n => n.label.toLowerCase().indexOf(text) >= 0);
-                update(suggestions);
-            }
-            emit('onFetch');
-        },
-        onSelect: function(item) {
-            buah.value = item.label;
-            if(this.onSelect === 'function') {
-                this.onSelect(item);
-            }
-            emit('onSelect:modelValue', item);
-        }
-    });
+      this.el = this.$refs.elAutoComplete;
+      this.$emit('onMounted');
+      this.generateEl();
   }
 }
 </script>
