@@ -79,6 +79,7 @@ export default {
     "minLength": Number,
     "disabled": Boolean,
     "required": Boolean,
+    "fieldToInput": String,
     "lov": {
       type: Array,
       default: () => []
@@ -148,7 +149,7 @@ export default {
               self.$emit('onFetch');
           },
           onSelect: function(item) {
-              el.value = item.label;
+              el.value = self.$props.fieldToInput ? item[self.$props.fieldToInput] : item.label;
 
               if(self.onSelect === 'function') {
                   self.onSelect(item);
@@ -173,6 +174,7 @@ export default {
       "minLength": props["minLength"] && parseInt(props["minLength"]) > 0 ? parseInt(props["minLength"]) : 1,
       "disabled": props["disabled"],
       "required": props["required"],
+      "fieldToInput": props["fieldToInput"] ? props["fieldToInput"] : "label",
       "lov": props["lov"] ? props["lov"] : [],
     }
   },
