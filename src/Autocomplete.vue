@@ -110,8 +110,6 @@ export default {
       // });
 
       //set value
-      console.log("new LOG: ", vals);
-      console.log("new LOV: ", this.lov);
       this.setValue(this.modelValue);
     },
     setValue(val) {
@@ -149,7 +147,12 @@ export default {
               self.$emit('onFetch');
           },
           onSelect: function(item) {
-              el.value = self.$props.fieldToInput ? item[self.$props.fieldToInput] : item.label;
+              if(self.$props.fieldToInput && typeof item[self.$props.fieldToInput] !== 'undefined') {
+                el.value = item[self.$props.fieldToInput];
+              } else {
+                el.value = item.label;
+              }
+              item.label = el.value; //ini memaksa agar yang ditampilkan adalah yang dipilih aja.
 
               if(self.onSelect === 'function') {
                   self.onSelect(item);
