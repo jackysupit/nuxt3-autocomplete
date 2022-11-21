@@ -57,9 +57,9 @@ export default {
     };
   },
   emits: [
-  'onFetch',
-  'onMounted',
-  'onSelect:modelValue',
+  'fetch',
+  'mounted',
+  'select',
   'update:modelValue',
   ],
   props: {
@@ -128,23 +128,19 @@ export default {
           minLength: 1,
           showOnFocus: self.showOnFocus,
           fetch: function(text, update) {
-              if(typeof self.onFetch === 'function') {
-                  self.onFetch(text, update);
-              } else {
-                  let lowerText = text.toLowerCase();
-                  var suggestions = self.$props.lov.filter(n => n.label.toLowerCase().indexOf(lowerText) >= 0);
+                let lowerText = text.toLowerCase();
+                var suggestions = self.$props.lov.filter(n => n.label.toLowerCase().indexOf(lowerText) >= 0);
 
-                  if(suggestions.length == 0) {
-                      let item = {
-                          label: text,
-                          value: "",
-                      }
-                      self.$emit('update:modelValue', item);
-                  }
+                if(suggestions.length == 0) {
+                    let item = {
+                        label: text,
+                        value: "",
+                    }
+                    self.$emit('update:modelValue', item);
+                }
 
-                  update(suggestions);
-              }
-              self.$emit('onFetch');
+                update(suggestions);
+                self.$emit('fetch');
           },
           onSelect: function(item) {
               if(self.$props.fieldToInput && typeof item[self.$props.fieldToInput] !== 'undefined') {
@@ -152,13 +148,9 @@ export default {
               } else {
                 el.value = item.label;
               }
-              // item.label = el.value; //ini memaksa agar yang ditampilkan adalah yang dipilih aja.
 
-              if(self.onSelect === 'function') {
-                  self.onSelect(item);
-              }
-              self.$emit('onSelect:modelValue', item);
               self.$emit('update:modelValue', item);
+              self.$emit('select'); //this should trigger after update
           },
           render: function(item, currentValue) {
               const itemElement = document.createElement("div");
@@ -195,7 +187,7 @@ export default {
   },
   mounted() {
       this.el = this.$refs.elAutoComplete;
-      this.$emit('onMounted');
+      this.$emit('mounted');
       this.generateEl();
   }
 }
