@@ -79,6 +79,7 @@ export default {
     "minLength": Number,
     "disabled": Boolean,
     "required": Boolean,
+    "fieldToDropdown": String,
     "fieldToInput": String,
     "lov": {
       type: Array,
@@ -88,7 +89,6 @@ export default {
   watch: {
     lov: {
       handler(val) {
-        debugger;
         this.setLov(val);
       },
       deep: true
@@ -152,13 +152,24 @@ export default {
               } else {
                 el.value = item.label;
               }
-              item.label = el.value; //ini memaksa agar yang ditampilkan adalah yang dipilih aja.
+              // item.label = el.value; //ini memaksa agar yang ditampilkan adalah yang dipilih aja.
 
               if(self.onSelect === 'function') {
                   self.onSelect(item);
               }
               self.$emit('onSelect:modelValue', item);
               self.$emit('update:modelValue', item);
+          },
+          render: function(item, currentValue) {
+              const itemElement = document.createElement("div");
+              let value = "";
+              if(self.$props.fieldToDropdown && typeof item[self.$props.fieldToDropdown] !== 'undefined') {
+                value = item[self.$props.fieldToDropdown];
+              } else {
+                value = item.label || "";
+              }
+              itemElement.textContent = value;
+              return itemElement;
           }
       });
     },
@@ -177,6 +188,7 @@ export default {
       "minLength": props["minLength"] && parseInt(props["minLength"]) > 0 ? parseInt(props["minLength"]) : 1,
       "disabled": props["disabled"],
       "required": props["required"],
+      "fieldToDropdown": props["fieldToDropdown"] ? props["fieldToDropdown"] : "label",
       "fieldToInput": props["fieldToInput"] ? props["fieldToInput"] : "label",
       "lov": props["lov"] ? props["lov"] : [],
     }
