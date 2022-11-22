@@ -27,7 +27,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         <div class="col-md-3 bg-danger">
         </div>
         <div class="col-md-3 bg-warning">
-            <Autocomplete :lov="countries" class="form-control" v-model="selected" @select="onSelectAutofill"/>
+            <Autocomplete :lov="countries" class="form-control" v-model="selected" @select="onSelectAutofill" @change="onSelectAutofill"/>
         </div>
         <div class="col-md-3 bg-info">
             selected: {{selected}}
@@ -56,6 +56,9 @@ export default defineNuxtPlugin((nuxtApp) => {
     }
 
     const onSelectAutofill = () => {
+        console.log("selected: ", selected);
+    }
+    const onChangeAutofill = () => {
         console.log("selected: ", selected);
     }
 

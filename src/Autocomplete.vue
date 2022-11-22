@@ -57,11 +57,36 @@ export default {
     };
   },
   emits: [
-  'fetch',
+  'change',
   'mounted',
   'select',
   'update:modelValue',
   ],
+  setup(props) {
+    return {
+      "elClass": props["class"],
+      "showOnFocus": props["showOnFocus"],
+      "name": props["name"],
+      "placeholder": props["placeholder"],
+      "color": props["color"] ? props["color"] : "black",
+      "bgcolor": props["bgcolor"] ? props["bgcolor"] : "white",
+      "selectedColor": props["selectedColor"] ? props["selectedColor"] : "black",
+      "selectedBgColor": props["selectedBgColor"] ? props["selectedBgColor"] : "lightgrey",
+      "borderColor": props["borderColor"] ? props["borderColor"] : "#f0f0f0",
+      "minLength": props["minLength"] && parseInt(props["minLength"]) >= 0 ? parseInt(props["minLength"]) : 0,
+      "disabled": props["disabled"],
+      "required": props["required"],
+      "inputIndex": parseInt(props["inputIndex"]),
+      "fieldToDropdown": props["fieldToDropdown"] ? props["fieldToDropdown"] : "label",
+      "fieldToInput": props["fieldToInput"] ? props["fieldToInput"] : "label",
+      "lov": props["lov"] ? props["lov"] : [],
+    }
+  },
+  mounted() {
+      this.el = this.$refs.elAutoComplete;
+      this.$emit('mounted');
+      this.generateEl();
+  },
   props: {
     modelValue: {
       type: Object,
@@ -81,6 +106,7 @@ export default {
     "required": Boolean,
     "fieldToDropdown": String,
     "fieldToInput": String,
+    "inputIndex": Number,
     "lov": {
       type: Array,
       default: () => []
@@ -125,22 +151,23 @@ export default {
 
       autocomplete({
           input: el,
-          minLength: 1,
+          minLength: self.$props.minLength,
           showOnFocus: self.showOnFocus,
           fetch: function(text, update) {
+				let suggestions = [];
                 let lowerText = text.toLowerCase();
-                var suggestions = self.$props.lov.filter(n => n.label.toLowerCase().indexOf(lowerText) >= 0);
-
-                if(suggestions.length == 0) {
-                    let item = {
-                        label: text,
-                        value: "",
-                    }
-                    self.$emit('update:modelValue', item);
-                }
-
+				if(text) {
+					suggestions = self.$props.lov.filter(n => n.label.toLowerCase().indexOf(lowerText) >= 0);
+				} else {
+					suggestions = self.$props.lov;
+				}
                 update(suggestions);
-                self.$emit('fetch');
+				let item = {
+					label: text,
+					value: "",
+				}
+				self.$emit('update:modelValue', item);
+                self.$emit('change');
           },
           onSelect: function(item) {
               if(self.$props.fieldToInput && typeof item[self.$props.fieldToInput] !== 'undefined') {
@@ -150,6 +177,7 @@ export default {
               }
 
               self.$emit('update:modelValue', item);
+			  self.$emit('change');
               self.$emit('select'); //this should trigger after update
           },
           render: function(item, currentValue) {
@@ -166,29 +194,5 @@ export default {
       });
     },
   },
-  setup(props) {
-    return {
-      "elClass": props["class"],
-      "showOnFocus": props["showOnFocus"],
-      "name": props["name"],
-      "placeholder": props["placeholder"],
-      "color": props["color"] ? props["color"] : "black",
-      "bgcolor": props["bgcolor"] ? props["bgcolor"] : "white",
-      "selectedColor": props["selectedColor"] ? props["selectedColor"] : "black",
-      "selectedBgColor": props["selectedBgColor"] ? props["selectedBgColor"] : "lightgrey",
-      "borderColor": props["borderColor"] ? props["borderColor"] : "#f0f0f0",
-      "minLength": props["minLength"] && parseInt(props["minLength"]) > 0 ? parseInt(props["minLength"]) : 1,
-      "disabled": props["disabled"],
-      "required": props["required"],
-      "fieldToDropdown": props["fieldToDropdown"] ? props["fieldToDropdown"] : "label",
-      "fieldToInput": props["fieldToInput"] ? props["fieldToInput"] : "label",
-      "lov": props["lov"] ? props["lov"] : [],
-    }
-  },
-  mounted() {
-      this.el = this.$refs.elAutoComplete;
-      this.$emit('mounted');
-      this.generateEl();
-  }
 }
 </script>
