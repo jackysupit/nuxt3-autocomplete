@@ -193,7 +193,7 @@ export default {
           }
       });
 
-      el.value = self.$props.modelValue.label; //default value to show 
+      el.value = self.$props.modelValue.label || ""; //default value to show
     },
   },
 }
