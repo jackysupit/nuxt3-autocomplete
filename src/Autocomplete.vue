@@ -193,7 +193,21 @@ export default {
           }
       });
 
-      el.value = self.$props.modelValue.label || ""; //default value to show
+      	let item = self.$props.modelValue;
+      	if(item) {
+			if(self.$props.fieldToInput && typeof item[self.$props.fieldToInput] !== 'undefined') {
+				if(item[self.$props.fieldToInput]) {
+					el.value = item[self.$props.fieldToInput];
+				}
+			} else {
+				if(item.label) {
+					el.value = item.label;
+				}
+			}
+			if(el.value) {
+				self.$emit('update:modelValue', item);
+			}
+		}
     },
   },
 }
