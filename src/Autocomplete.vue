@@ -4,7 +4,7 @@
     :class="elClass ? elClass : ''"
     :name="name"
     :placeholder="placeholder"
-    :minLength="minLength ? minLength : 1"
+    :minLength="minLength ? parseInt(minLength) : 1"
     :disabled=disabled
     :required=required
 />
@@ -151,22 +151,22 @@ export default {
 
       autocomplete({
           input: el,
-          minLength: self.$props.minLength,
+          minLength: parseInt(self.$props.minLength),
           showOnFocus: self.showOnFocus,
           fetch: function(text, update) {
-				let suggestions = [];
+                let suggestions = [];
                 let lowerText = text.toLowerCase();
-				if(text) {
-					suggestions = self.$props.lov.filter(n => n.label.toLowerCase().indexOf(lowerText) >= 0);
-				} else {
-					suggestions = self.$props.lov;
-				}
+                if(text) {
+                  suggestions = self.$props.lov.filter(n => n.label.toLowerCase().indexOf(lowerText) >= 0);
+                } else {
+                  suggestions = self.$props.lov;
+                }
                 update(suggestions);
-				let item = {
-					label: text,
-					value: "",
-				}
-				self.$emit('update:modelValue', item);
+                let item = {
+                    label: text,
+                    value: "",
+                }
+				        self.$emit('update:modelValue', item);
                 self.$emit('change');
           },
           onSelect: function(item) {
@@ -177,7 +177,7 @@ export default {
               }
 
               self.$emit('update:modelValue', item);
-			  self.$emit('change');
+			        self.$emit('change');
               self.$emit('select'); //this should trigger after update
           },
           render: function(item, currentValue) {
@@ -192,6 +192,8 @@ export default {
               return itemElement;
           }
       });
+
+      el.value = self.$props.modelValue.label; //default value to show 
     },
   },
 }
